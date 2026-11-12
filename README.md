@@ -10,19 +10,15 @@ An Outlook-inspired email composer for Cloudflare, built to stay private.
 
 </div>
 
-![Mailroom in light mode, showing fictional domains and a draft](docs/images/compose-light.jpg)
+![Mailroom workspace with fictional domains and messages](docs/images/history-dark.jpg)
 
 | ✉️ Compose                                     | 🌐 Domains                                              | 🌗 Appearance                                  | 🔒 Private                               |
 | ---------------------------------------------- | ------------------------------------------------------- | ---------------------------------------------- | ---------------------------------------- |
 | Autosaved draft, Cc/Bcc, review before sending | Choose sender prefixes; hide domains with a right-click | System by default, with Light and Dark choices | Password unlock, server-side credentials |
 
-**Dark mode · recent sends**
-
-![Mailroom in dark mode, showing fictional send history](docs/images/history-dark.jpg)
-
 Right-click a domain → **Hide / Show**. Masking is cosmetic (`northstar.example` → `*********.example`); the preference is saved in your backend.
 
-_All screenshots use fictional data. This is a sender, not an inbox._
+_Screenshot uses fictional data. This is a sender, not an inbox._
 
 ## 🚀 Run locally
 
