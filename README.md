@@ -10,18 +10,15 @@ An Outlook-inspired email composer for Cloudflare, built to stay private.
 
 </div>
 
-![Mailroom in light mode, showing fictional domains and a draft](docs/images/compose-light.png)
+![Mailroom in light mode, showing fictional domains and a draft](docs/images/compose-light.jpg)
 
 | ✉️ Compose                                     | 🌐 Domains                                              | 🌗 Appearance                                  | 🔒 Private                               |
 | ---------------------------------------------- | ------------------------------------------------------- | ---------------------------------------------- | ---------------------------------------- |
 | Autosaved draft, Cc/Bcc, review before sending | Choose sender prefixes; hide domains with a right-click | System by default, with Light and Dark choices | Password unlock, server-side credentials |
 
-<details>
-<summary><strong>See dark mode</strong></summary>
+**Dark mode · recent sends**
 
-![Mailroom in dark mode, showing fictional send history](docs/images/history-dark.png)
-
-</details>
+![Mailroom in dark mode, showing fictional send history](docs/images/history-dark.jpg)
 
 Right-click a domain → **Hide / Show**. Masking is cosmetic (`northstar.example` → `*********.example`); the preference is saved in your backend.
 
@@ -62,6 +59,7 @@ Domains enabled for Email Sending appear alongside enabled Email Routing domains
    | ------- | ------------- | ------------ |
    | Account | Email Sending | Edit / Write |
    | Zone    | Zone          | Read         |
+   | Zone    | Zone Settings | Read         |
 
    Select all zones in that account to discover all its sending domains, or select specific zones to limit access.
 
