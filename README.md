@@ -51,12 +51,12 @@ npm run dev
 
 Open **http://localhost:5173**, use the local sign-in, then unlock with the password in `.mailroom-password`. Save it in your password manager. Restart the server after changing `.dev.vars`.
 
-Only domains enabled for Email Sending and visible to your token appear.
+Domains enabled for Email Sending appear alongside enabled Email Routing domains that can send to verified recipients. Successful test-mode history is retained as a fallback. Both must remain accessible to your token. Test-only domains are labeled **Verified recipient only**.
 
 ### 🔑 Cloudflare key
 
 1. In Cloudflare, open **Manage Account → API Tokens → Create Token**. Choose a custom token and name it `Mailroom`. See the [official token guide](https://developers.cloudflare.com/fundamentals/api/get-started/create-token/).
-2. Add these permissions and scope them to your sending account and domains:
+2. Add these permissions and scope them to your sending account and domains. Zone Settings Read lets Mailroom check whether Email Routing is enabled:
 
    | Scope   | Permission    | Access       |
    | ------- | ------------- | ------------ |
@@ -76,7 +76,7 @@ Only domains enabled for Email Sending and visible to your token appear.
 
    Copy your Account ID from the Cloudflare dashboard. Leave the generated login/session values intact. On ChatGPT Sites, configure these as server environment values instead; see [Sites setup](docs/SITES.md).
 
-5. [Onboard your domain in Email Sending](https://developers.cloudflare.com/email-service/get-started/send-emails/) and complete its DNS authentication. Verify your test recipient in Cloudflare, restart Mailroom, then **Sync**. An empty list means no accessible domain is enabled for sending.
+5. [Onboard your domain in Email Sending](https://developers.cloudflare.com/email-service/get-started/send-emails/) and complete its DNS authentication. Verify your test recipient in Cloudflare, restart Mailroom, then **Sync**. An empty list means no accessible domain is enabled or has routing enabled or successful test-mode history in this workspace.
 
 Keep `.dev.vars` private and untracked. Test mode is restricted to the configured verified address; Cloudflare plan limits still apply.
 

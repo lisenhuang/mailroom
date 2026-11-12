@@ -102,3 +102,12 @@ export function maskDomain(domain: string): string {
     ? "*".repeat(domain.length)
     : "*".repeat(dot) + domain.slice(dot);
 }
+
+// Keep successfully used test domains visible without admitting every DNS zone.
+export function visibleSendingDomains<
+  T extends { name: string; enabled: boolean; routingEnabled?: boolean },
+>(domains: T[], tested: Set<string>) {
+  return domains
+    .filter((d) => d.enabled || d.routingEnabled || tested.has(d.name))
+    .map((d) => ({ ...d, testOnly: !d.enabled }));
+}

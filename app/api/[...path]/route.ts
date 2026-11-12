@@ -7,7 +7,7 @@ import {
   domainList,
   sendMessage,
 } from "@/lib/mail-server";
-import { digest, sameOrigin } from "@/lib/mail-core";
+import { digest, sameOrigin, visibleSendingDomains } from "@/lib/mail-core";
 export const dynamic = "force-dynamic";
 const json = (
   data: unknown,
@@ -77,6 +77,13 @@ async function handle(request: Request) {
     if (!(await sessionValid(request, owner)))
       return json({ error: "Unlock your mailroom to continue." }, 401);
     if (path === "domains" && request.method === "GET") {
+      const priorTests = await env.DB.prepare(
+        "SELECT DISTINCT json_extract(data,'$.domain') AS domain FROM sends WHERE owner=? AND status IN ('delivered','queued') AND json_extract(data,'$.testMode')=1",
+      )
+        .bind(owner)
+        .all<{ domain: string }>();
+      const tested = new Set(priorTests.results.map((row) => row.domain));
+
       const [domains, prefs] = await Promise.all([
         domainList(),
         env.DB.prepare(
@@ -89,9 +96,10 @@ async function handle(request: Request) {
         prefs.results.filter((p) => p.hidden === 1).map((p) => p.domain),
       );
       return json({
-        domains: domains
-          .filter((d) => d.enabled)
-          .map((d) => ({ ...d, hidden: hidden.has(d.name) })),
+        domains: visibleSendingDomains(domains, tested).map((d) => ({
+          ...d,
+          hidden: hidden.has(d.name),
+        })),
         testRecipient: env.TEST_RECIPIENT,
       });
     }

@@ -7,6 +7,7 @@ import {
   escapeHtml,
   recipients,
   maskDomain,
+  visibleSendingDomains,
 } from "../lib/mail-core.ts";
 const valid = {
   ...blankMessage,
@@ -93,4 +94,35 @@ test("domain masking preserves suffix and exact prefix length", () => {
   assert.equal(maskDomain("northstar.example"), "*********.example");
   assert.equal(maskDomain("sub.example.com"), "***********.com");
   assert.equal(maskDomain("abc"), "***");
+});
+
+test("successful test domains remain visible while unrelated or inaccessible zones stay excluded", () => {
+  const rows = visibleSendingDomains(
+    [
+      { name: "configured.example", enabled: true },
+      { name: "tested.example", enabled: false },
+      { name: "unused.example", enabled: false },
+    ],
+    new Set(["tested.example", "inaccessible.example"]),
+  );
+  assert.deepEqual(
+    rows.map((x) => [x.name, x.testOnly]),
+    [
+      ["configured.example", false],
+      ["tested.example", true],
+    ],
+  );
+});
+
+test("routing domains are included before any send history exists", () => {
+  assert.deepEqual(
+    visibleSendingDomains(
+      [
+        { name: "routing.example", enabled: false, routingEnabled: true },
+        { name: "unused.example", enabled: false, routingEnabled: false },
+      ],
+      new Set(),
+    ).map((d) => d.name),
+    ["routing.example"],
+  );
 });

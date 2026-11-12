@@ -162,13 +162,46 @@ export async function domainList() {
     sending.filter((x) => x.enabled === true).map((x) => x.name),
   );
   const known = new Set(zones.map((x) => x.name));
-  const rows = zones.map((z) => ({
-    name: z.name,
-    zoneId: z.id,
-    enabled: ready.has(z.name),
-    kind: "domain",
-    status: z.status,
-  }));
+  const rows: {
+    name: string;
+    zoneId: string;
+    enabled: boolean;
+    routingEnabled: boolean;
+    kind: string;
+    status: string;
+  }[] = [];
+  for (let i = 0; i < zones.length; i += 5) {
+    await Promise.all(
+      zones.slice(i, i + 5).map(async (z) => {
+        let routingEnabled = false;
+        if (!ready.has(z.name)) {
+          const response = await fetch(
+            `https://api.cloudflare.com/client/v4/zones/${z.id}/email/routing`,
+            {
+              headers: { Authorization: `Bearer ${env.CF_EMAIL_TOKEN}` },
+              signal: AbortSignal.timeout(10000),
+            },
+          );
+          if (response.ok) {
+            const data = (await response.json()) as any;
+            routingEnabled =
+              data.success === true && data.result?.enabled === true;
+          } else if (response.status !== 403 && response.status !== 404)
+            throw new Error(
+              "Could not check Email Routing status. Try syncing again.",
+            );
+        }
+        rows.push({
+          name: z.name,
+          zoneId: z.id,
+          enabled: ready.has(z.name),
+          routingEnabled,
+          kind: "domain",
+          status: z.status,
+        });
+      }),
+    );
+  }
   for (let i = 0; i < sending.length; i += 5) {
     await Promise.all(
       sending.slice(i, i + 5).map(async (z) => {
@@ -181,6 +214,7 @@ export async function domainList() {
               name: s.name,
               zoneId: zone.id,
               enabled: !!s.enabled,
+              routingEnabled: false,
               kind: "subdomain",
               status: s.enabled ? "active" : "disabled",
             });

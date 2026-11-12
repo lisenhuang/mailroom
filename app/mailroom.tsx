@@ -39,6 +39,7 @@ type Domain = {
   enabled: boolean;
   kind: string;
   status: string;
+  testOnly?: boolean;
   hidden?: boolean;
 };
 type Sent = {
@@ -739,7 +740,9 @@ export default function Mailroom({ demo = false }: { demo?: boolean }) {
                   {view === "sent" ? "All messages" : "Sending domains"}
                 </span>
                 <small>
-                  {view === "sent" ? "Last 100" : `${enabled} ready`}
+                  {view === "sent"
+                    ? "Last 100"
+                    : `${enabled} general · ${domains.length - enabled} test`}
                 </small>
               </div>
               {loading && !domains.length ? (
@@ -840,7 +843,9 @@ export default function Mailroom({ demo = false }: { demo?: boolean }) {
                       <div className="domain-row-content">
                         <strong>{displayDomain(d.name)}</strong>
                         <span>
-                          {d.enabled ? "Ready to send" : "Setup needed"}
+                          {d.enabled
+                            ? "Ready to send"
+                            : "Verified recipient only"}
                         </span>
                       </div>
                       {d.enabled ? (
@@ -981,12 +986,12 @@ export default function Mailroom({ demo = false }: { demo?: boolean }) {
                           <strong>
                             {draft.testMode
                               ? "Test mode is on"
-                              : "General sending is not enabled"}
+                              : "Verified-recipient sending is available"}
                           </strong>
                           <span>
                             {draft.testMode
                               ? `Only ${testRecipient || "your test address"} can receive this message.`
-                              : "Onboard this domain in Cloudflare, or use test mode for your verified address."}
+                              : "Use test mode for your verified address. Onboard in Cloudflare to send to other recipients."}
                           </span>
                         </div>
                         <button
@@ -1082,7 +1087,9 @@ export default function Mailroom({ demo = false }: { demo?: boolean }) {
                       ) : (
                         <AlertCircle size={15} />
                       )}{" "}
-                      {active?.enabled ? "Ready to send" : "Setup needed"}
+                      {active?.enabled
+                        ? "Ready to send"
+                        : "Verified recipient only"}
                     </span>
                     <h2>
                       {active?.enabled
@@ -1092,7 +1099,7 @@ export default function Mailroom({ demo = false }: { demo?: boolean }) {
                     <p>
                       {active?.enabled
                         ? "Choose a sender prefix and write your message. Your domain is enabled for sending."
-                        : "Enable this domain in Cloudflare Email Sending to send to general recipients. You can send a test to your verified address first."}
+                        : "This domain supports verified-recipient sending. Use test mode for your verified address; complete Cloudflare onboarding to send to other recipients."}
                     </p>
                     <div className="domain-facts">
                       <div>
