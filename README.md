@@ -53,7 +53,32 @@ Open **http://localhost:5173**, use the local sign-in, then unlock with the pass
 
 Only domains enabled for Email Sending and visible to your token appear.
 
-Your scoped API token needs **Account → Email Sending → Edit** (API: Write) and **Zone → Zone → Read** for your domains. [Onboard sending domains in Cloudflare](https://developers.cloudflare.com/email-service/get-started/send-emails/) before general sending. Test mode only permits your configured, verified recipient. Provider plan limits still apply.
+### 🔑 Cloudflare key
+
+1. In Cloudflare, open **Manage Account → API Tokens → Create Token**. Choose a custom token and name it `Mailroom`. See the [official token guide](https://developers.cloudflare.com/fundamentals/api/get-started/create-token/).
+2. Add these permissions and scope them to your sending account and domains:
+
+   | Scope   | Permission    | Access       |
+   | ------- | ------------- | ------------ |
+   | Account | Email Sending | Edit / Write |
+   | Zone    | Zone          | Read         |
+
+   Select all zones in that account to discover all its sending domains, or select specific zones to limit access.
+
+3. Create the token and save its secret in your password manager. Cloudflare shows it once. Use this scoped API token rather than your Global API Key.
+4. Run `npm run setup`, then fill in the generated **`.dev.vars`**:
+
+   ```dotenv
+   CF_ACCOUNT_ID="your_cloudflare_account_id"
+   CF_EMAIL_TOKEN="your_scoped_api_token"
+   TEST_RECIPIENT="you@example.com"
+   ```
+
+   Copy your Account ID from the Cloudflare dashboard. Leave the generated login/session values intact. On ChatGPT Sites, configure these as server environment values instead; see [Sites setup](docs/SITES.md).
+
+5. [Onboard your domain in Email Sending](https://developers.cloudflare.com/email-service/get-started/send-emails/) and complete its DNS authentication. Verify your test recipient in Cloudflare, restart Mailroom, then **Sync**. An empty list means no accessible domain is enabled for sending.
+
+Keep `.dev.vars` private and untracked. Test mode is restricted to the configured verified address; Cloudflare plan limits still apply.
 
 ## 🤖 Run on ChatGPT Sites
 
