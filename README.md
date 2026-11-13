@@ -91,6 +91,10 @@ draft before sending any real email. Never make my workspace public.
 
 Sites adds owner ChatGPT sign-in before the password screen. See [hosting notes and secret names](docs/SITES.md).
 
+## 🤖 Browser tools (WebMCP)
+
+Compatible browser agents can list domains, read or prepare a draft, and open its review dialog after you unlock Mailroom. Hidden domains stay masked. Sending still requires clicking **Send message**. [Tool reference](docs/WEBMCP.md).
+
 ## Small print
 
 Local development binds to loopback. Production requires **owner-only Sites hosting**; do not expose the raw Worker directly. Secrets, databases, and generated passwords are gitignored. Only theme preference is stored in browser local storage.

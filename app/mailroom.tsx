@@ -1,4 +1,6 @@
 "use client";
+import { useMailroomWebMcp } from "@/hooks/use-mailroom-webmcp";
+import { validateReview } from "@/lib/mailroom-webmcp";
 import ThemePicker from "./theme-picker";
 import { useEffect, useRef, useState } from "react";
 import { createDemoApi } from "@/lib/demo";
@@ -320,16 +322,8 @@ export default function Mailroom({ demo = false }: { demo?: boolean }) {
   }
   function openReview() {
     try {
-      const valid = validateMessage(draft);
-      if (
-        !valid.testMode &&
-        !domains.some((d) => d.name === valid.domain && d.enabled)
-      )
-        throw new Error(
-          "This domain needs setup. Enable test mode to send to your verified test address.",
-        );
+      setReview({ ...validateReview(draft, domains, testRecipient) });
       setError("");
-      setReview({ ...valid });
     } catch (e) {
       setError((e as Error).message);
     }
@@ -372,6 +366,37 @@ export default function Mailroom({ demo = false }: { demo?: boolean }) {
       setSending(false);
     }
   }
+  useMailroomWebMcp(unlocked && ready, {
+    state: () => ({
+      unlocked,
+      ready,
+      busy: sending || !!review,
+      domains,
+      draft,
+      testRecipient,
+    }),
+    async checkSession() {
+      const session = await api("session");
+      if (!session.unlocked) clearPrivate();
+      return session.unlocked;
+    },
+    async saveDraft(message) {
+      await api("draft", { data: message, updated: Date.now() });
+      setReview(null);
+      setDraft(message);
+      sendKey.current = null;
+      setError("");
+      setQuery("");
+      newMessage();
+    },
+    showReview(message) {
+      setError("");
+      setReview({ ...message });
+      setView("compose");
+      setQuery("");
+      setMobileNav(false);
+    },
+  });
   const enabled = domains.filter((d) => d.enabled).length,
     active = domains.find((d) => d.name === draft.domain),
     filteredDomains = domains.filter((d) =>
